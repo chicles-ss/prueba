@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MDC - Los Santos</title>
+    <style>
+        body { background-color: #0a0a0a; color: white; font-family: Arial, sans-serif; margin: 0; }
+        .header { background-color: #e5d925; color: black; text-align: center; padding: 15px; font-size: 24px; font-weight: bold; }
+        .container { display: flex; padding: 20px; gap: 20px; }
+        .foto-box { border: 1px solid white; width: 250px; height: 300px; display: flex; align-items: center; justify-content: center; color: gray; overflow: hidden; }
+        .info-box { flex-grow: 1; border-top: 4px solid #e5d925; background-color: #1a1a1a; padding: 20px; }
+        .info-box h2 { color: #e5d925; margin-top: 0; }
+        .botones { margin: 20px; }
+        button { background-color: #333; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-right: 10px; }
+        button:hover { background-color: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="header">Ficha Gubernamental</div>
+
+    <div class="botones">
+        <input type="text" id="buscadorNombre" placeholder="Buscar nombre o ID..." style="padding: 10px;">
+        <button onclick="buscarCiudadano()">Buscar</button>
+        <button onclick="alert('Programaremos esto en el siguiente paso')">Nueva Ficha</button>
+    </div>
+
+    <div class="container">
+        <div>
+            <div class="foto-box" id="fotoSujeto">[Foto]</div>
+            <h3 style="text-align: center; color: #e5d925;" id="nombreSujeto">Nombre</h3>
+        </div>
+        
+        <div class="info-box">
+            <h2>Información personal</h2>
+            <p><strong>Identificación:</strong> <span id="idSujeto">#----</span></p>
+            <p><strong>Edad:</strong> <span id="edadSujeto">----</span></p>
+            <p><strong>Nacionalidad:</strong> <span id="nacionalidadSujeto">----</span></p>
+            <p><strong>Residencia:</strong> <span id="residenciaSujeto">----</span></p>
+            <p><strong>Raza:</strong> <span id="razaSujeto">----</span></p>
+        </div>
+    </div>
+
+    <script>
+        // PEGA AQUÍ TU ENLACE DE GOOGLE APPS SCRIPT DENTRO DE LAS COMILLAS
+        const API_URL = "https://script.google.com/macros/s/AKfycbwuxUBhK109VYpCUlnVeoi-XBTAdoHftlonbTezDmrjQ0Kv6PBks7T6RZwTsix2EdA/exec";
+
+        function buscarCiudadano() {
+            const busqueda = document.getElementById("buscadorNombre").value;
+            if (!busqueda) return alert("Escribe un nombre para buscar");
+
+            document.getElementById("nombreSujeto").innerText = "Buscando...";
+
+            fetch(API_URL + "?accion=buscar&texto=" + encodeURIComponent(busqueda))
+            .then(res => res.json())
+            .then(datos => {
+                if (datos.encontrado) {
+                    document.getElementById("nombreSujeto").innerText = datos.nombre;
+                    document.getElementById("idSujeto").innerText = datos.id;
+                    document.getElementById("edadSujeto").innerText = datos.edad;
+                    document.getElementById("nacionalidadSujeto").innerText = datos.nacionalidad;
+                    document.getElementById("residenciaSujeto").innerText = datos.residencia;
+                    document.getElementById("razaSujeto").innerText = datos.raza;
+                    
+                    if (datos.foto && datos.foto !== "") {
+                        document.getElementById("fotoSujeto").innerHTML = `<img src="${datos.foto}" style="max-width:100%; max-height:100%;">`;
+                    } else {
+                        document.getElementById("fotoSujeto").innerHTML = "Sin Foto";
+                    }
+                } else {
+                    alert("No se encontró a nadie con ese nombre");
+                    document.getElementById("nombreSujeto").innerText = "No encontrado";
+                }
+            })
+            .catch(err => {
+                alert("Error de conexión");
+                document.getElementById("nombreSujeto").innerText = "Nombre";
+            });
+        }
+    </script>
+</body>
+</html>
